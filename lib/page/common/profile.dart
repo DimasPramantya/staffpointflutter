@@ -11,10 +11,42 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
+enum Currency { idr, usd, gbp, jpy }
+
 class _ProfilePageState extends State<ProfilePage> {
   UserProfile? userProfile;
   bool isLoading = true;
   final ApiService apiService = ApiService();
+  Currency selectedCurrency = Currency.idr;
+
+  Map<Currency, double> exchangeRates = {
+    Currency.idr: 1.0,
+    Currency.usd: 0.000061,
+    Currency.gbp: 0.000045,
+    Currency.jpy: 0.0089,
+  };
+
+  String getCurrencySymbol(Currency currency) {
+    switch (currency) {
+      case Currency.usd:
+        return 'USD';
+      case Currency.gbp:
+        return 'GBP';
+      case Currency.jpy:
+        return 'JPY';
+      case Currency.idr:
+      default:
+        return 'Rp';
+    }
+  }
+
+  String formatSalary(double salary) {
+    final converted = salary * exchangeRates[selectedCurrency]!;
+    final symbol = getCurrencySymbol(selectedCurrency);
+    return '$symbol ${converted.toStringAsFixed(2)}';
+  }
+
+
 
   static const Color _primaryColor = Color(0xFF6A1B9A);
   static const Color _textColor = Colors.black87;
@@ -135,8 +167,36 @@ class _ProfilePageState extends State<ProfilePage> {
               buildProfileItem(CupertinoIcons.location_solid, 'Alamat', userProfile!.address),
               buildProfileItem(CupertinoIcons.phone_fill, 'Telepon', userProfile!.phone),
               const Divider(thickness: 0.5, indent: 16, endIndent: 16),
-
-              buildProfileItem(CupertinoIcons.money_dollar, 'Gaji', "Rp ${userProfile!.salary.toString()}"),
+              buildProfileItem(
+                CupertinoIcons.money_dollar,
+                'Gaji (asli)',
+                "Rp ${userProfile!.salary.toStringAsFixed(0)}",
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    const Text("Lihat dalam: "),
+                    const SizedBox(width: 8),
+                    DropdownButton<Currency>(
+                      value: selectedCurrency,
+                      onChanged: (Currency? newValue) {
+                        setState(() {
+                          selectedCurrency = newValue!;
+                        });
+                      },
+                      items: Currency.values.map((Currency currency) {
+                        return DropdownMenuItem<Currency>(
+                          value: currency,
+                          child: Text(getCurrencySymbol(currency)),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(width: 16),
+                    Text(formatSalary(userProfile!.salary.toDouble())),
+                  ],
+                ),
+              ),
               buildProfileItem(CupertinoIcons.lock_shield_fill, 'Role', userProfile!.roleName),
             ],
           ),

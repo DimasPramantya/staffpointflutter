@@ -12,16 +12,42 @@ class UserDetailPage extends StatefulWidget {
   State<UserDetailPage> createState() => _UserDetailPageState();
 }
 
+enum TimeZone { wib, wita, wit, london }
+
 class _UserDetailPageState extends State<UserDetailPage> {
   Map<String, dynamic>? user;
   List<dynamic> attendanceRecords = [];
   bool isLoading = true;
   String errorMessage = '';
 
+  TimeZone selectedTimeZone = TimeZone.wib;
+
   @override
   void initState() {
     super.initState();
     fetchUserDetails();
+  }
+
+  String formatAttendanceDate(String dateStr, TimeZone zone) {
+    final wib = DateTime.parse(dateStr).toLocal(); // API = WIB
+    late final DateTime converted;
+
+    switch (zone) {
+      case TimeZone.wita:
+        converted = wib.add(const Duration(hours: 1));
+        break;
+      case TimeZone.wit:
+        converted = wib.add(const Duration(hours: 2));
+        break;
+      case TimeZone.london:
+        converted = wib.subtract(const Duration(hours: 6)); // WIB = UTC+7, London (non-DST) = UTC+1
+        break;
+      case TimeZone.wib:
+      default:
+        converted = wib;
+    }
+
+    return DateFormat('yyyy-MM-dd HH:mm').format(converted);
   }
 
   Future<void> fetchUserDetails() async {
@@ -59,6 +85,15 @@ class _UserDetailPageState extends State<UserDetailPage> {
         errorMessage = 'Something went wrong.';
         isLoading = false;
       });
+    }
+  }
+
+  String getTimeZoneLabel(TimeZone tz) {
+    switch (tz) {
+      case TimeZone.wib: return "WIB (GMT+7)";
+      case TimeZone.wita: return "WITA (GMT+8)";
+      case TimeZone.wit: return "WIT (GMT+9)";
+      case TimeZone.london: return "London (GMT+1)";
     }
   }
 
@@ -102,11 +137,35 @@ class _UserDetailPageState extends State<UserDetailPage> {
             Text("Job: ${user!['job_name']}"),
             Text("Role: ${user!['role_name']}"),
             Text("Company: ${user!['company_name']}"),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text("Timezone:", style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(width: 8),
+                DropdownButton<TimeZone>(
+                  value: selectedTimeZone,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedTimeZone = value;
+                      });
+                    }
+                  },
+                  items: TimeZone.values.map((tz) {
+                    final label = tz.name.toUpperCase();
+                    return DropdownMenuItem(
+                      value: tz,
+                      child: Text(label),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
             const SizedBox(height: 24),
             const Text("Attendance History", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             ...attendanceRecords.map((record) {
-              final date = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(record['attendance_date']));
+              final date = formatAttendanceDate(record['attendance_date'], selectedTimeZone);
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
