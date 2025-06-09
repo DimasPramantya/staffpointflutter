@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:staffpoint/page/common/attendance.dart';
 import 'package:staffpoint/page/common/company_profile.dart';
-import 'package:staffpoint/page/admin/admin_list_anggota.dart';
+import 'package:staffpoint/page/user/user_list_anggota.dart';
 import 'package:staffpoint/page/common/notification.dart';
 import 'package:staffpoint/page/common/profile.dart';
 import 'package:staffpoint/service/sse_service.dart';
@@ -76,7 +76,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
   static const List<Widget> _pages = <Widget>[
     UserDashboardContent(),
-    AdminListPage(),
+    UserListPage(),
     NotificationPage(),
     ProfilePage(),
   ];
