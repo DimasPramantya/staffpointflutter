@@ -87,7 +87,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   static const List<Widget> _pages = <Widget>[
     AdminDashboardContent(),
-    UserListPage(),
+    AdminListPage(),
     NotificationPage(),
     ProfilePage(),
   ];

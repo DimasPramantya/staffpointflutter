@@ -115,4 +115,47 @@ class ApiService {
       );
     }
   }
+
+  Future<BaseResponse<Map<String, dynamic>>> fetchUserById(int userId, String token) async {
+    final uri = Uri.parse("$_baseUrl/users/$userId");
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return BaseResponse<Map<String, dynamic>>.fromJson(json, (data) => data as Map<String, dynamic>);
+    } else {
+      return BaseResponse<Map<String, dynamic>>(
+        code: response.statusCode,
+        message: 'Failed to fetch user',
+        data: {},
+      );
+    }
+  }
+
+  Future<BaseResponse<List<dynamic>>> fetchUserAttendance(int userId, String token) async {
+    final uri = Uri.parse("$_baseUrl/users/attendance/$userId");
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return BaseResponse<List<dynamic>>.fromJson(json, (data) => data as List<dynamic>);
+    } else {
+      return BaseResponse<List<dynamic>>(
+        code: response.statusCode,
+        message: 'Failed to fetch user attendance',
+        data: [],
+      );
+    }
+  }
+
 }

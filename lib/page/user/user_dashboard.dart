@@ -76,7 +76,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
   static const List<Widget> _pages = <Widget>[
     UserDashboardContent(),
-    UserListPage(),
+    AdminListPage(),
     NotificationPage(),
     ProfilePage(),
   ];
