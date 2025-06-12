@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -141,6 +142,9 @@ class _AnggotaFormPageState extends State<AnggotaFormPage> {
                 controller: salaryController,
                 decoration: const InputDecoration(labelText: 'Gaji'),
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
               ),
               const SizedBox(
                 height: 12,
