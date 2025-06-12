@@ -40,9 +40,22 @@ class _AttendancePageState extends State<AttendancePage> {
     if (res.statusCode == 200) {
       final data = json.decode(res.body);
       final items = data['data'] ?? [];
+      final now = DateTime.now().toUtc().add(const Duration(hours: 7));
+      final todayStr = DateFormat('yyyy-MM-dd').format(now);
+
+      final todayHistory = items.where((item) {
+        final date = DateTime.tryParse(item['attendance_date'] ?? '');
+        return date != null && DateFormat('yyyy-MM-dd').format(date) == todayStr;
+      }).toList();
+
+      todayHistory.sort((a, b) {
+        final dateA = DateTime.tryParse(a['attendance_date'] ?? '') ?? DateTime(1970);
+        final dateB = DateTime.tryParse(b['attendance_date'] ?? '') ?? DateTime(1970);
+        return dateB.compareTo(dateA); // descending
+      });
       setState(() {
         history = items;
-        lastType = items.isNotEmpty ? items[0]['attendance_type'] : null;
+        lastType = todayHistory.isNotEmpty ? todayHistory.first['attendance_type'] : null;
         isLoading = false;
       });
     } else {

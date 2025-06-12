@@ -29,18 +29,18 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   String formatAttendanceDate(String dateStr, TimeZone zone) {
-    final wib = DateTime.parse(dateStr).toLocal(); // API = WIB
+    final wib = DateTime.parse(dateStr).toLocal();
     late final DateTime converted;
 
     switch (zone) {
       case TimeZone.wita:
-        converted = wib.add(const Duration(hours: 1));
-        break;
-      case TimeZone.wit:
         converted = wib.add(const Duration(hours: 2));
         break;
+      case TimeZone.wit:
+        converted = wib.add(const Duration(hours: 3));
+        break;
       case TimeZone.london:
-        converted = wib.subtract(const Duration(hours: 6)); // WIB = UTC+7, London (non-DST) = UTC+1
+        converted = wib.subtract(const Duration(hours: 7));
         break;
       case TimeZone.wib:
       default:
