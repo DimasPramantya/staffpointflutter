@@ -56,7 +56,7 @@ class AdminDashboardContent extends StatelessWidget {
               builder: (_) => AlertDialog(
                 title: const Text('Kesan Teknologi Mobile'),
                 content: const Text(
-                  'Mata kuliah ini sangat menantang dan menarik. Saya belajar membangun aplikasi mobile secara nyata menggunakan Flutter!',
+                    "Mata kuliah TPM sangat melatih kemampuan ngoding saya, khususnya di bidang pengembangan aplikasi mobile. Saya banyak mendapat pengetahuan baru, seperti pemanfaatan LBS, serta pengelolaan state di Flutter, dan lainnya. Namun, saya kurang berkenan dengan beberapa soal kuis yang menurut saya berada di luar cakupan materi yang telah disampaikan."
                 ),
                 actions: [
                   TextButton(
