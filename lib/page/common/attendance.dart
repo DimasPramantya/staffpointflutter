@@ -17,7 +17,7 @@ class AttendancePage extends StatefulWidget {
 class _AttendancePageState extends State<AttendancePage> {
   bool isLoading = false;
   File? photo;
-  String? lastType; // 'checkin', 'checkout', or null
+  String? lastType;
   List<dynamic> history = [];
 
   final String apiUrl = 'https://staff-point-352086447594.asia-southeast2.run.app/api/users/attendance';
@@ -47,12 +47,6 @@ class _AttendancePageState extends State<AttendancePage> {
         final date = DateTime.tryParse(item['attendance_date'] ?? '');
         return date != null && DateFormat('yyyy-MM-dd').format(date) == todayStr;
       }).toList();
-
-      todayHistory.sort((a, b) {
-        final dateA = DateTime.tryParse(a['attendance_date'] ?? '') ?? DateTime(1970);
-        final dateB = DateTime.tryParse(b['attendance_date'] ?? '') ?? DateTime(1970);
-        return dateB.compareTo(dateA); // descending
-      });
       setState(() {
         history = items;
         lastType = todayHistory.isNotEmpty ? todayHistory.first['attendance_type'] : null;
@@ -84,7 +78,6 @@ class _AttendancePageState extends State<AttendancePage> {
       return null;
     }
 
-    // Request permission
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -134,7 +127,19 @@ class _AttendancePageState extends State<AttendancePage> {
       await fetchHistory();
     } else {
       final msg = json.decode(respStr)['message'] ?? "Error";
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Error"),
+          content: Text(msg),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
     }
   }
 
